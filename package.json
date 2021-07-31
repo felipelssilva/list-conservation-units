@@ -1,0 +1,14 @@
+{
+  "name": "lista-de-ucs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "@fast-csv/format": "^4.3.5",
+    "@fast-csv/parse": "^4.3.6",
+    "fast-csv": "^4.3.6",
+    "jsdom": "^16.6.0"
+  },
+  "author": "Felipe Luis",
+  "license": "MIT"
+}
