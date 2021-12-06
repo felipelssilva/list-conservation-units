@@ -1,13 +1,16 @@
 {
   "name": "lista-de-ucs",
   "version": "1.0.0",
-  "description": "",
+  "description": "List of Conservation Units",
   "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
   "dependencies": {
     "@fast-csv/format": "^4.3.5",
     "@fast-csv/parse": "^4.3.6",
     "fast-csv": "^4.3.6",
-    "jsdom": "^16.6.0"
+    "jsdom": "^16.7.0"
   },
   "author": "Felipe Luis",
   "license": "MIT"
