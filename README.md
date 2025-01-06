@@ -13,7 +13,6 @@ Este repositório foi desenvolvido para extrair dados de Unidades de Conservaç�
 - 📋 Nomes
 - 🔗 Links
 - 📧 E-mails
-- 🗂️ Informações sobre planos de manejo
 
 ## 💡 Motivação
 
@@ -30,7 +29,6 @@ This repository was built to extract data from Conservation Units available on t
 - 📋 Names
 - 🔗 Links
 - 📧 Emails
-- 🗂️ Management plan details
 
 ## 💡 Motivation
 This project was inspired by a request from [PhD Laís Carneiro](https://github.com/lalacarneiro), aiming to deepen research into environmental conservation in Brazil. 🌎
