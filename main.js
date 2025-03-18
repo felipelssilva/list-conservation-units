@@ -7,7 +7,7 @@ const https = require('https')
 const { writeToPath } = require('@fast-csv/format');
 const url = 'https://www.gov.br/icmbio/pt-br/assuntos/biodiversidade/unidade-de-conservacao/unidades-de-biomas'
 const unitsData = './public/visited/unitsData.json'
-const CUData = './public/visited/CUData.json'
+const ConservationUnitsData = './public/visited/ConservationUnitsData.json'
 
 let unitsUrl = []
 let urlsVisited = []
@@ -49,23 +49,23 @@ const fetch = async function (url) {
  */
 const start = async function () {
   let fileUnitsData = getFile(unitsData)
-  let fileCUData = getFile(CUData)
+  let fileConservationUnitsData = getFile(ConservationUnitsData)
 
-  if (!fileUnitsData && !fileCUData) {
+  if (!fileUnitsData && !fileConservationUnitsData) {
     await fetch(url)
-      .then((response) => getCusOnBiomes(response))
+      .then((response) => getConservationUnitsOnBiomes(response))
       .then(() => getAllUnitsByBiomes())
       .then(async () => await loadUnitsInBiomes())
       .catch(error => {
         customLog(error, url)
       })
   } else {
-    fs.readFile(CUData, (err, data) => {
+    fs.readFile(ConservationUnitsData, (err, data) => {
       if (err) throw err;
-      let cusData = JSON.parse(data);
+      let localConservationUnitData = JSON.parse(data);
 
-      cusData.forEach(async (cu) => {
-        await fetch(cu.url)
+      localConservationUnitData.forEach(async (conservationUnit) => {
+        await fetch(conservationUnit.url)
           .then((response) => {
             let dom = new JSDOM(response)
 
@@ -76,7 +76,7 @@ const start = async function () {
             
             urlsVisited.push({
               name: dom.window.document.getElementsByClassName("outstanding-title")[0].textContent.trim(),
-              url: cu.url,
+              url: conservationUnit.url,
               visited: true,
               hasManagementPlan: !!getItemByElementsTagName(dom.window.document.getElementsByTagName("h3"), "PLANO DE MANEJO"),
               email: textExtractEmails
@@ -115,7 +115,7 @@ function extractEmails(text) {
 /**
  * Get the name and url of Conservation Units On Biomes
  */
-function getCusOnBiomes(response) {
+function getConservationUnitsOnBiomes(response) {
   let dom = new JSDOM(response)
   var links = dom.window.document.querySelectorAll('a.govbr-card-content')
 
@@ -136,13 +136,13 @@ function getAllUnitsByBiomes() {
     await fetch(unit.url + '/lista-de-ucs')
       .then((response) => {
         let dom = new JSDOM(response)
-        let cuPages = dom.window.document.querySelectorAll('ul.paginacao li a');
+        let conservationUnitPages = dom.window.document.querySelectorAll('ul.paginacao li a');
 
-        cuPages.forEach(async (cuPage, index) => {
-          fetchUnitsInCUData(cuPage.href.split("?")[0] + getPages()[index][index], unit, index)
+        conservationUnitPages.forEach(async (conservationUnitPage, index) => {
+          fetchUnitsInConservationUnitsData(conservationUnitPage.href.split("?")[0] + getPages()[index][index], unit, index)
 
-          if (cuPage.href.indexOf('mata-atlantica') > 0 && index == 7) {
-            fetchUnitsInCUData(cuPage.href.split("?")[0] + getPages()[8][8], unit, 8)
+          if (conservationUnitPage.href.indexOf('mata-atlantica') > 0 && index == 7) {
+            fetchUnitsInConservationUnitsData(conservationUnitPage.href.split("?")[0] + getPages()[8][8], unit, 8)
           }
         })
 
@@ -172,17 +172,17 @@ async function loadUnitsInBiomes() {
  * @param {object} unit unit of the iteration
  * @param {int} index index of loop
  */
-async function fetchUnitsInCUData(url, unit, index) {
+async function fetchUnitsInConservationUnitsData(url, unit, index) {
   await fetch(url)
     .then((response) => {
       let dom = new JSDOM(response)
-      // cus - Convervation Unit's
-      var cus = dom.window.document.querySelectorAll("#content-core .summary.url")
+      // conservationUnits - Convervation Unit's
+      var conservationUnits = dom.window.document.querySelectorAll("#content-core .summary.url")
 
-      cus.forEach((cu) => {
+      conservationUnits.forEach((conservationUnit) => {
         unitsInBiomes.push({
-          name: cu.textContent.trim(),
-          url: cu.href,
+          name: conservationUnit.textContent.trim(),
+          url: conservationUnit.href,
           biome: unit.name,
           page: index
         })
@@ -190,7 +190,7 @@ async function fetchUnitsInCUData(url, unit, index) {
 
     })
     .then(() => {
-      fs.writeFileSync(CUData, JSON.stringify(unitsInBiomes));
+      fs.writeFileSync(ConservationUnitsData, JSON.stringify(unitsInBiomes));
     })
     .catch(error => {
       customLog(error, url)
