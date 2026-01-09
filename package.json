@@ -10,7 +10,7 @@
     "@fast-csv/format": "^5.0.5",
     "@fast-csv/parse": "^5.0.5",
     "fast-csv": "^5.0.5",
-    "jsdom": "^27.3.0"
+    "jsdom": "^27.4.0"
   },
   "author": "Felipe Luis",
   "license": "MIT"
